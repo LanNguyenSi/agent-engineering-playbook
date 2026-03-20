@@ -269,6 +269,191 @@ npx prisma migrate dev --name init
 npx prisma generate
 ```
 
+### Step 6.5: Docker Development Environment (Optional)
+
+**Why Docker for Development?**
+- ✅ Consistent environment across team
+- ✅ No local PostgreSQL/Redis installation needed
+- ✅ One command to start all services
+- ✅ Easy to reset/clean state
+
+**1. Create `docker-compose.yml`**
+```yaml
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: myapp
+      POSTGRES_PASSWORD: devpassword
+      POSTGRES_DB: myapp_dev
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U myapp"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # Application (optional - for full containerization)
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: "postgresql://myapp:devpassword@db:5432/myapp_dev"
+      REDIS_URL: "redis://redis:6379"
+      NODE_ENV: development
+    volumes:
+      # Hot reload - mount source code
+      - ./src:/app/src
+      - ./prisma:/app/prisma
+      - ./public:/app/public
+      # Don't mount node_modules (use container's version)
+      - /app/node_modules
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: npm run dev
+
+volumes:
+  postgres_data:
+  redis_data:
+```
+
+**2. Create `Dockerfile.dev`** (for app service)
+```dockerfile
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Install dependencies
+COPY package*.json ./
+RUN npm ci
+
+# Copy source code
+COPY . .
+
+# Expose port
+EXPOSE 3000
+
+# Default command (can be overridden in docker-compose)
+CMD ["npm", "run", "dev"]
+```
+
+**3. Update `.env.local`**
+```bash
+# When using Docker services
+DATABASE_URL="postgresql://myapp:devpassword@localhost:5432/myapp_dev"
+REDIS_URL="redis://localhost:6379"
+
+# When running app IN Docker (use service names)
+# DATABASE_URL="postgresql://myapp:devpassword@db:5432/myapp_dev"
+# REDIS_URL="redis://redis:6379"
+```
+
+**4. Add to `.gitignore`**
+```
+# Docker
+docker-compose.override.yml
+```
+
+**5. Usage Commands**
+
+**Start services** (DB + Redis only, app runs locally):
+```bash
+# Start PostgreSQL + Redis
+docker compose up -d db redis
+
+# Check status
+docker compose ps
+
+# View logs
+docker compose logs -f db redis
+
+# Stop services
+docker compose down
+
+# Reset data (WARNING: deletes all data)
+docker compose down -v
+```
+
+**Full containerization** (DB + Redis + App):
+```bash
+# Start everything
+docker compose up -d
+
+# Rebuild app after dependency changes
+docker compose up -d --build app
+
+# Run migrations inside container
+docker compose exec app npx prisma migrate dev
+
+# Access app shell
+docker compose exec app sh
+```
+
+**6. Common Development Workflow**
+
+```bash
+# Day 1: Start fresh
+docker compose up -d db redis
+npm run dev  # App runs locally, connects to Docker DB
+
+# Day 2: Continue work
+docker compose start  # Resume existing containers
+npm run dev
+
+# Reset database
+docker compose down -v  # Delete volumes
+docker compose up -d db redis
+npx prisma migrate dev  # Recreate schema
+```
+
+**7. Team Onboarding Benefits**
+
+New developer setup:
+```bash
+# Clone repo
+git clone <repo-url>
+cd my-project
+
+# Start services
+docker compose up -d db redis
+
+# Install dependencies + run migrations
+npm install
+npx prisma migrate dev
+
+# Start development
+npm run dev
+```
+
+No PostgreSQL installation, no Redis setup, no "works on my machine" issues!
+
 ### Step 7: Environment Configuration
 
 **`.env.local`** (never commit!)
@@ -433,6 +618,7 @@ Use this when starting a new project:
 - [ ] TypeScript + ESLint + Prettier configured
 - [ ] `.ai/` context files created
 - [ ] Database set up with migrations
+- [ ] Docker Compose for development (optional but recommended)
 - [ ] Environment variables configured
 - [ ] Testing framework installed
 - [ ] Documentation written (README, CONTRIBUTING)
