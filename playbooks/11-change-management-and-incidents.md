@@ -2,6 +2,15 @@
 
 Enterprise products need disciplined change handling and credible incident response long before they become large.
 
+## When To Apply
+
+Use lightweight parts of this chapter as soon as the product is user-facing.
+
+Treat it as mandatory in:
+
+- `Phase 2 - Production` for incident roles, runbooks, and release communication
+- `Phase 3 - Enterprise` for formal change classes, stronger approvals, and after-action discipline
+
 ## Objectives
 
 This chapter covers:

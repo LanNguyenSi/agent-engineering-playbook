@@ -2,6 +2,17 @@
 
 Enterprise products need more than secure coding advice. They need clear control ownership, reviewable access, and explicit risk decisions.
 
+## When To Apply
+
+This chapter is part of the `enterprise path`.
+
+Treat it as mandatory in `Phase 3 - Enterprise` and pull it forward earlier when:
+
+- sensitive data is involved
+- customer security reviews begin
+- privileged production access must be auditable
+- AI agent permissions touch sensitive systems
+
 ## Objectives
 
 This chapter defines the baseline for:

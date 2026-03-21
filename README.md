@@ -6,8 +6,9 @@ Pragmatic guidance for building AI-assisted software that can survive enterprise
 
 This repository is a working playbook for teams building production systems with human engineers and AI agents. It does not assume that speed alone is success. It treats delivery, safety, operability, and maintainability as first-class concerns.
 
-The material is organized into eleven playbooks:
+The material is organized into twelve playbooks:
 
+0. [Adoption Paths](playbooks/00-adoption-paths.md)
 1. [Project Setup](playbooks/01-project-setup.md)
 2. [Architecture](playbooks/02-architecture.md)
 3. [Team Roles](playbooks/03-team-roles.md)
@@ -38,22 +39,31 @@ This revision shifts the playbook toward:
 - operational readiness before production
 - short feedback loops without lowering release discipline
 
+It now also distinguishes between:
+
+- a `core path` for every serious product team
+- an `enterprise path` for products with higher customer, compliance, security, or operating complexity
+
 ## How To Use It
 
 For a new initiative:
 
-1. Start with [Project Start Checklist](checklists/project-start.md).
-2. Write a project charter, architecture context, and initial ADRs.
-3. Choose the smallest architecture and delivery model that satisfies current risk.
-4. Define security ownership, change controls, and incident expectations.
-5. Set release gates before feature work begins.
+1. Start with [Adoption Paths](playbooks/00-adoption-paths.md).
+2. Run the [Phase Assessment Checklist](checklists/phase-assessment.md).
+3. Start with [Project Start Checklist](checklists/project-start.md).
+4. Write a project charter, architecture context, and initial ADRs.
+5. Choose the smallest architecture and delivery model that satisfies current risk.
+6. Define security ownership, change controls, and incident expectations.
+7. Set release gates before feature work begins.
 
 For an existing product:
 
-1. Run the [Pre-Production Checklist](checklists/pre-production.md).
-2. Run the [Security Review Checklist](checklists/security-review.md).
-3. Compare current process against [Development Workflow](playbooks/05-development-workflow.md), [Quality Assurance](playbooks/07-quality-assurance.md), and [Security and Governance](playbooks/10-security-and-governance.md).
-4. Close missing controls in testing, observability, documentation, rollout strategy, access governance, and incident readiness.
+1. Start with [Adoption Paths](playbooks/00-adoption-paths.md).
+2. Run the [Phase Assessment Checklist](checklists/phase-assessment.md).
+3. Run the [Pre-Production Checklist](checklists/pre-production.md).
+4. Run the [Security Review Checklist](checklists/security-review.md) when sensitive paths or enterprise obligations apply.
+5. Compare current process against [Development Workflow](playbooks/05-development-workflow.md), [Quality Assurance](playbooks/07-quality-assurance.md), and [Security and Governance](playbooks/10-security-and-governance.md).
+6. Close missing controls in testing, observability, documentation, rollout strategy, access governance, and incident readiness.
 
 ## Core Principles
 
@@ -68,6 +78,7 @@ For an existing product:
 ## Repository Structure
 
 ### Playbooks
+- [playbooks/00-adoption-paths.md](playbooks/00-adoption-paths.md)
 - [playbooks/01-project-setup.md](playbooks/01-project-setup.md)
 - [playbooks/02-architecture.md](playbooks/02-architecture.md)
 - [playbooks/03-team-roles.md](playbooks/03-team-roles.md)
@@ -81,6 +92,7 @@ For an existing product:
 - [playbooks/11-change-management-and-incidents.md](playbooks/11-change-management-and-incidents.md)
 
 ### Checklists
+- [checklists/phase-assessment.md](checklists/phase-assessment.md)
 - [checklists/project-start.md](checklists/project-start.md)
 - [checklists/code-review.md](checklists/code-review.md)
 - [checklists/pre-production.md](checklists/pre-production.md)
@@ -105,6 +117,16 @@ For an existing product:
 - Staff and senior engineers designing architecture and release controls
 - Product teams working with AI agents in the development loop
 - Founders and CTOs moving from prototype behavior to production discipline
+- AI agents that need to adapt process rigor to project phase instead of applying every control immediately
+
+## Adoption Model
+
+Use the repository in two layers:
+
+- `Core path`: the default path for any project expected to reach production quality.
+- `Enterprise path`: additional controls that become necessary when customer expectations, regulatory demands, security exposure, or organizational complexity increase.
+
+The decision logic lives in [playbooks/00-adoption-paths.md](playbooks/00-adoption-paths.md).
 
 ## Scope And Non-Goals
 

@@ -2,6 +2,16 @@
 
 Production readiness means the system can be deployed, observed, operated, and recovered under realistic conditions.
 
+## When To Apply
+
+This chapter becomes mandatory in `Phase 2 - Production`.
+
+Use parts of it earlier if:
+
+- a first live release is near
+- support expectations already exist
+- the system has meaningful user or business impact
+
 ## Production Baseline
 
 Before a service is considered production-ready, define:
