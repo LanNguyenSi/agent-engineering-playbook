@@ -1,139 +1,176 @@
-# 05 — Development Workflow
+# 05 - Development Workflow
 
-> The workflow that delivered 13 features in one day.
+The workflow must produce change that is small, reviewable, testable, auditable, and safe to release.
 
-## Overview
+## Objectives
 
-```
-Human defines priorities
-  → Lead creates task specs
-    → Developer implements on branch
-      → Developer creates PR
-        → Lead reviews (score 1-10)
-          → Lead fixes post-merge issues
-            → Lead deploys
-              → Human tests
-```
+A good workflow:
 
-## Task-Based Development
+- keeps mainline healthy
+- gives reviewers enough context to evaluate risk
+- makes rollback possible
+- provides traceability from requirement to production change
 
-### Why Tasks, Not Issues
+## Recommended Delivery Model
 
-GitHub Issues are for bug reports and feature requests. **Tasks** are self-contained work packages for agents.
+Default to trunk-based development with short-lived branches unless your regulatory context requires heavier release branching.
 
-A task file lives in the repo (`tasks/` or `.ai/TASKS.md`) and contains everything an agent needs:
+Baseline rules:
 
-```markdown
-### Task 001: Booking Cancel API
-**Priority:** P0
-**Estimate:** 2h
-**Status:** Open
+1. `main` or `trunk` is always releasable.
+2. Branches are short-lived and scoped to one coherent change.
+3. No direct pushes to the protected branch.
+4. CI gates must pass before merge.
+5. Production releases require a known owner and rollback path.
 
-**Problem:** Users cannot cancel their bookings.
-**Solution:** PATCH /api/bookings/[id] with dual auth.
-**Files:** app/api/bookings/[id]/route.ts, components/CancelBookingButton.tsx
-**Notes:** Use transaction. Check admin_token key.
-```
+## Change Lifecycle
 
-**Why this works:**
-- Agent reads one file, knows exactly what to build
-- No context switching between GitHub UI and code
-- Priorities are clear (P0 → P1 → P2)
-- Status tracking is in the file itself
+### 1. Intake
 
-### Prioritization
+Every change starts with:
 
-| Priority | Meaning | Action |
-|----------|---------|--------|
-| P0 | Must have for production | Build first |
-| P1 | Important for UX | Build after P0 |
-| P2 | Nice to have | Build if time allows |
+- business objective
+- scope
+- risk classification
+- acceptance criteria
+- affected systems and dependencies
 
-**Real example:** We had 13 tasks. P0 (5 tasks) → P1 (4 tasks) → P2 (4 tasks). All completed in order.
+### 2. Ready For Implementation
+
+Before coding starts:
+
+- unclear requirements are resolved
+- architecture impact is understood
+- security and data concerns are identified
+- test approach is agreed
+- rollout plan is known for risky changes
+
+### 3. Implementation
+
+Developers and agents should:
+
+- keep diffs small
+- update tests and docs with the change
+- avoid bundling unrelated work
+- preserve backward compatibility unless explicitly approved otherwise
+
+### 4. Pull Request
+
+A PR should state:
+
+- what changed
+- why the change exists
+- risk level
+- how it was tested
+- rollout or migration notes
+
+### 5. Review
+
+Review is a gate, not a ceremony.
+
+Required checks:
+
+- correctness
+- security implications
+- test adequacy
+- operational impact
+- documentation impact
+
+Do not replace review quality with subjective numeric scoring.
+
+### 6. Merge
+
+Merge only when:
+
+- required reviewers approved
+- CI passed
+- blocking comments are resolved
+- migrations and rollout steps are documented
+
+### 7. Release
+
+Choose release strategy based on risk:
+
+- direct release for low-risk internal changes
+- feature flags for partially ready behavior
+- canary or phased rollout for medium to high risk
+- scheduled release window for high-blast-radius changes
 
 ## Branch Strategy
 
-```
-main (production)
-  └── feat/001-booking-cancel
-  └── feat/002-event-soft-delete
-  └── feat/013-localization-de
-```
+Example naming:
 
-**Rules:**
-1. `main` is always deployable
-2. One branch per task
-3. Branch name: `feat/<task-id>-<short-name>`
-4. Always pull `main` before creating a new branch
-5. PR to `main`, never direct push
+- `feat/user-bulk-invite`
+- `fix/payment-timeout-retry`
+- `docs/release-runbook`
 
-**Lesson learned:** Lava branched task 013 before task 002 was merged → lost DeleteEventButton. Fix: Always `git pull origin main` before starting a new task.
+Avoid long-lived feature branches where possible. They hide integration risk and increase merge pain.
 
-## Review Process
+## Required Controls
 
-### The Score System (1-10)
+### Branch Protection
 
-| Score | Meaning | Action |
-|-------|---------|--------|
-| 10/10 | Perfect, no changes needed | Merge immediately |
-| 9-9.5 | Excellent, minor notes | Merge, fix post-merge if needed |
-| 8-8.5 | Good, some issues | Merge with fixes |
-| 7-7.5 | Acceptable | Request changes or fix post-merge |
-| <7 | Needs work | Request changes, don't merge |
+- required status checks
+- at least one reviewer
+- code owner review for sensitive areas
+- no force push to protected branches
 
-### What to Check
+### CI Baseline
 
-1. **Correctness** — Does it solve the problem from the task spec?
-2. **Consistency** — Does it follow existing patterns? (localStorage keys, API response format, etc.)
-3. **Safety** — Are DB mutations in transactions? Is auth checked?
-4. **Completeness** — Are edge cases handled? (null values, empty states, errors)
-5. **Build** — Does it compile? Does the Docker build succeed?
+- dependency install with lockfile
+- lint and static analysis
+- unit and integration tests
+- build verification
+- security scans appropriate to the stack
 
-### Post-Merge Fixes
+### Change Evidence
 
-Sometimes it's faster to merge and fix than to request changes:
+Capture enough information to answer later:
 
-```
-Merge PR → Fix localStorage key → Commit fix → Push → Deploy
-```
+- who requested the change
+- who reviewed it
+- what was tested
+- when it was deployed
+- how rollback would work
 
-This worked for us because the Lead (Ice) could fix small issues faster than sending the PR back.
+## When To Block A Merge
 
-**When NOT to merge-and-fix:**
-- Architecture issues (wrong approach)
-- Security issues (auth bypass)
-- Data integrity issues (missing transaction)
+Do not merge-and-fix later for:
 
-## Deploy Pipeline
+- security issues
+- data integrity risk
+- broken or missing migrations
+- missing rollback for risky changes
+- failing CI
+- unreviewed agent-generated code in sensitive areas
 
-```
-Code merged to main
-  → Pull on server
-    → Docker build (--no-cache if schema changed)
-      → Docker up -d
-        → DB migration if needed
-          → Verify (curl health check)
-```
+Post-merge follow-up is acceptable only for low-risk cleanup that does not change correctness or safety.
 
-**Critical:** After Prisma schema changes:
-1. Docker build with `--no-cache` (Prisma Client must regenerate)
-2. Run DB migration on production container
-3. Verify the app starts without errors
+## AI Agent Rules In The Workflow
 
-## Velocity Metrics
+If agents create or modify code:
 
-What we tracked:
+- the PR must disclose that agent assistance was used
+- humans remain accountable for review and release
+- generated code must meet the same standards as handwritten code
+- prompts and context should be stable enough to reproduce important changes
 
-| Metric | Target | Actual |
-|--------|--------|--------|
-| Tasks per day | 5-8 | 13 |
-| Average score | 8+ | 9.5 |
-| Time per task | 1-2h | 45min avg |
-| Deploy failures | <10% | 2 (Prisma, Tailwind) |
-| Post-merge fixes | <20% | 3/13 (23%) |
+## Metrics That Matter
 
-## Ice's Opinion
+Track metrics that improve delivery, not vanity metrics:
 
-> The biggest productivity hack: **task specs that an agent can read without asking questions.** Every question from the developer is a round-trip that costs 5-10 minutes. A good task spec has zero round-trips.
+- lead time for change
+- deployment frequency
+- change failure rate
+- mean time to restore service
+- escaped defect rate
+- flaky test rate
 
-> Post-merge fixes are not failures — they're efficiency. Sending a PR back for a one-character fix (`adminToken` → `admin_token`) wastes more time than fixing it yourself in 30 seconds.
+## Exit Criteria
+
+Your workflow is ready when:
+
+- every merge is traceable
+- risky changes have explicit rollout planning
+- protected branches cannot be bypassed casually
+- review capacity does not depend on one person

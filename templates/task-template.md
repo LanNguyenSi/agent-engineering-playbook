@@ -1,35 +1,40 @@
 # Task Template
 
-Copy this for each new task.
-
 ```markdown
-### Task XXX: [Title]
+## Title
 
-**Priority:** P0 / P1 / P2
-**Estimate:** Xh
-**Status:** Open / In Progress / Done
+Short task title.
 
-**Problem:**
-What's missing or broken. Be specific.
+## Outcome
 
-**Solution:**
-What to build. Include the approach, not just the goal.
+What user, business, or operational problem this task solves.
 
-**Files to Create/Modify:**
-```
-path/to/new-file.ts        — NEW: Description
-path/to/existing-file.ts   — MODIFY: What changes
-```
+## Scope
 
-**Implementation Notes:**
-- Pattern to follow (reference existing code)
-- Edge cases to handle
-- Dependencies on other tasks
-- Testing approach (curl commands, browser test)
+- In scope
+- Out of scope
 
-**Acceptance Criteria:**
-- [ ] Feature works as described
-- [ ] Build passes
-- [ ] Existing features not broken
-- [ ] German/English strings as appropriate
+## Risk
+
+Low / Medium / High
+
+## Acceptance Criteria
+
+- [ ] Criterion 1
+- [ ] Criterion 2
+
+## Constraints And Dependencies
+
+- Known technical constraints
+- Required integrations
+- Decisions or ADRs to follow
+- Threat-model or security review trigger if relevant
+
+## Implementation Notes
+
+- Expected approach
+- Affected areas
+- Testing expectations
+- Rollout or migration notes if relevant
+- Runbook or incident impact if relevant
 ```

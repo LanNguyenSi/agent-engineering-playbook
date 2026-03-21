@@ -1,30 +1,45 @@
 # Checklist: Project Start
 
-## Before First Line of Code
+## Product And Scope
 
-- [ ] Requirements documented (what, not how)
-- [ ] Tech stack decided (ADR written)
-- [ ] Repository created
-- [ ] `.ai/` context files initialized
-  - [ ] AGENTS.md (roles, workflow)
-  - [ ] ARCHITECTURE.md (structure, patterns)
-  - [ ] TASKS.md (initial backlog)
-  - [ ] DECISIONS.md (first ADR: tech stack)
-- [ ] `.gitignore` (node_modules, .env, dist, .next)
-- [ ] Package.json with scripts (dev, build, test, lint)
-- [ ] TypeScript strict mode configured
-- [ ] Linter configured (ESLint)
-- [ ] Database schema designed (Prisma schema)
-- [ ] `.env.example` with all required variables
-- [ ] README.md with Quick Start
+- [ ] Problem statement written
+- [ ] Target users and stakeholders identified
+- [ ] Success criteria include functional and operational outcomes
+- [ ] Out-of-scope items documented
+- [ ] Major constraints documented
 
-## Before First Deploy
+## Architecture And Delivery
 
-- [ ] Docker multi-stage Dockerfile
-- [ ] docker-compose.yml (local dev)
-- [ ] docker-compose.traefik.yml (production)
-- [ ] Health endpoint (`GET /health`)
-- [ ] DNS configured
-- [ ] SSL working (Let's Encrypt)
-- [ ] Admin user created
-- [ ] Default passwords changed
+- [ ] Initial architecture chosen and justified
+- [ ] First ADRs created
+- [ ] Environment model defined
+- [ ] Branch and review strategy defined
+- [ ] CI baseline agreed
+- [ ] Rollback ownership defined
+
+## Security And Data
+
+- [ ] Secret handling approach defined
+- [ ] Access model for repo and environments defined
+- [ ] Threat-modeling trigger defined
+- [ ] Data sensitivity and retention expectations documented
+- [ ] Vulnerability triage owner identified
+- [ ] Security and privacy owners identified
+
+## Repository Standards
+
+- [ ] `README.md` exists
+- [ ] `CONTRIBUTING.md` exists
+- [ ] `SECURITY.md` exists
+- [ ] `.gitignore` is complete
+- [ ] Build, lint, test, and local-start scripts exist
+- [ ] Formatting and lint rules configured
+
+## Operational Readiness
+
+- [ ] Health-check strategy defined
+- [ ] Observability baseline defined
+- [ ] Initial runbook ownership assigned
+- [ ] Change classification and approval expectations defined
+- [ ] Incident severity model defined
+- [ ] Backlog starts with testable acceptance criteria

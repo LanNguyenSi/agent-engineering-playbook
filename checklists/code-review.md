@@ -1,43 +1,35 @@
 # Checklist: Code Review
 
-## Quick Review (< 5 min)
+## Correctness
 
-- [ ] PR description explains what and why
-- [ ] Branch is based on latest `main`
-- [ ] Build passes (no TypeScript errors)
-- [ ] No `any` types
-- [ ] Follows existing naming conventions
-- [ ] No hardcoded secrets or credentials
+- [ ] Change solves the stated problem
+- [ ] Acceptance criteria are met
+- [ ] Edge cases and error paths were considered
 
-## Standard Review (5-15 min)
+## Safety
 
-All of Quick Review, plus:
+- [ ] Authentication and authorization are correct
+- [ ] No secrets or sensitive data were introduced
+- [ ] Data integrity and migration impact were reviewed
+- [ ] Rollback or mitigation is clear for risky changes
+- [ ] Security review was performed for sensitive changes
 
-- [ ] DB mutations use transactions where needed
-- [ ] Error handling present (try/catch, graceful failures)
-- [ ] Auth checks on protected endpoints
-- [ ] Consistent with existing patterns (localStorage keys, API responses)
-- [ ] Edge cases handled (null, empty, error states)
-- [ ] Responsive design (mobile + desktop)
-- [ ] German strings for UI (if applicable)
+## Engineering Quality
 
-## Deep Review (15-30 min)
+- [ ] Code follows existing standards or intentionally improves them
+- [ ] Tests are adequate for the risk of the change
+- [ ] CI passed
+- [ ] Logging, metrics, or alerts were updated if behavior changed
 
-All of Standard Review, plus:
+## Operational Impact
 
-- [ ] Architecture makes sense (separation of concerns)
-- [ ] No N+1 queries
-- [ ] Performance considerations (large datasets, pagination)
-- [ ] Security review (XSS, injection, auth bypass)
-- [ ] Tests added for new functionality
-- [ ] Documentation updated (README, API docs)
+- [ ] Deployment steps are documented if needed
+- [ ] Runbooks or docs were updated if needed
+- [ ] Backward compatibility concerns were addressed
+- [ ] Dependencies and interfaces were reviewed for breakage risk
+- [ ] Change classification matches the actual release risk
 
-## Scoring Guide
+## AI-Assisted Changes
 
-| Score | Criteria |
-|-------|----------|
-| 10 | Perfect. No changes. Ship it. |
-| 9-9.5 | Excellent. Minor notes, merge immediately. |
-| 8-8.5 | Good. Small fixes needed, can fix post-merge. |
-| 7-7.5 | Acceptable. Issues found but approach is correct. |
-| <7 | Needs work. Wrong approach or missing critical pieces. |
+- [ ] Agent-generated code was reviewed with the same rigor as human-written code
+- [ ] Hidden assumptions or undocumented conventions were removed

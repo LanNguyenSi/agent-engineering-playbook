@@ -1,132 +1,138 @@
-# 04 — Design Principles for Agent Engineering
+# 04 - Design Principles
 
-> Principles that matter in practice, not just in textbooks.
+Good enterprise products do not emerge from style preferences. They emerge from design choices that reduce risk, preserve changeability, and make failure visible.
 
-## Core Principles
+## Primary Principles
 
-### 1. Spec First, Code Second
+### Design For Change
 
-Never start coding without a written spec. A task file with Problem, Solution, Files, and Notes saves more time than it takes to write.
+Assume requirements, traffic patterns, and integrations will change. Favor designs that localize impact and keep changes reversible.
 
-**Why:** Agents (and humans) make better decisions with context. A 20-line spec prevents a 200-line rewrite.
+Signals:
 
-**How:**
-```markdown
-### Task 001: Booking Cancel API
-**Problem:** Users cannot cancel bookings.
-**Solution:** PATCH /api/bookings/[id] with admin + public auth.
-**Files:** app/api/bookings/[id]/route.ts, components/CancelBookingButton.tsx
-**Notes:** Use transaction for slot restoration. Check existing patterns for localStorage key.
-```
+- small interfaces
+- explicit dependencies
+- versioned contracts
+- isolated domains and modules
 
-### 2. Convention Over Configuration
+### Secure By Default
 
-Agree on patterns once, follow them everywhere.
+The safe path must be the normal path.
 
-| Convention | Example |
-|-----------|---------|
-| File naming | `kebab-case.ts` for files, `PascalCase` for components |
-| API responses | `{ data: T }` for success, `{ error: string }` for errors |
-| Auth header | `Authorization: Bearer <token>` |
-| DB mutations | Always in `$transaction()` when affecting related data |
-| State storage | `localStorage.getItem('admin_token')` — one key, everywhere |
+Examples:
 
-**Real lesson:** Lava used `adminToken` in one component while the rest used `admin_token`. Caught in review, but a convention doc would have prevented it.
+- least-privilege permissions
+- deny-by-default authorization rules
+- secure headers and input validation
+- secrets from managed stores, not source control
 
-### 3. Composition Over Complexity
+### Simplicity Before Cleverness
 
-Build small, focused pieces that compose.
+Use the simplest design that satisfies current risk and scale. Enterprise systems fail from accidental complexity more often than from insufficient abstraction.
 
-**Good:**
-```
-BookingForm (client) → calls API → API uses transaction → sends email async
-```
+### Explicit Tradeoffs
 
-**Bad:**
-```
-BookingPage (does everything: form, validation, API call, email, slot update)
-```
+Every meaningful design choice should answer:
 
-### 4. Fail Gracefully
+- what problem is being solved
+- what alternatives were considered
+- what risks are accepted
+- how the choice can be revisited later
 
-Every external operation (email, API, file) should fail without breaking the core flow.
+That belongs in ADRs, not in someone's memory.
 
-```typescript
-// Good: Email failure doesn't break booking
-sendBookingConfirmation(booking).catch(error => {
-  console.error('Failed to send email:', error);
-});
+### Make Failure Containable
 
-// Bad: Email failure cancels the booking
-await sendBookingConfirmation(booking); // throws → booking rolled back
-```
+Failures should be isolated, observable, and recoverable.
 
-### 5. Mobile First, Desktop Enhanced
+Design for:
 
-Design for mobile, enhance for desktop. Not the other way around.
+- timeouts
+- retries with idempotency
+- partial failure handling
+- graceful degradation
+- rollback or forward-fix options
 
-```tsx
-// Mobile: stack, Desktop: row
-<div className="flex flex-col sm:flex-row">
+### Build In Operability
 
-// Mobile: cards, Desktop: table
-<div className="md:hidden">  {/* Mobile cards */}
-<div className="hidden md:block">  {/* Desktop table */}
-```
+If a system cannot be understood in production, it is not well designed.
 
-### 6. Type Everything
+Minimum expectations:
 
-TypeScript strict mode. No `any`. Ever.
+- structured logs
+- metrics for critical flows
+- traces for distributed paths
+- health and readiness endpoints
+- dashboards and runbooks for common failures
 
-If you think you need `any`, you need a better type definition.
+### Protect Data Intentionally
 
-```typescript
-// Bad
-const metadata = booking.metadata as any;
+Data handling rules are design decisions.
 
-// Good
-interface BookingMetadata {
-  company?: string;
-  role?: string;
-}
-const metadata = booking.metadata as BookingMetadata | null;
-```
+Define:
 
-### 7. Document Decisions, Not Code
+- data classification
+- retention periods
+- deletion and archival strategy
+- tenant isolation approach
+- encryption requirements at rest and in transit
 
-Good code is self-documenting. But WHY you chose an approach is not obvious from code.
+### Preserve Compatibility
 
-**Document:**
-- Why Traefik over Nginx (sustainability over speed)
-- Why `force-dynamic` on DB pages (Next.js Server Components constraint)
-- Why JWT over sessions (stateless, works with multiple services)
+For APIs, events, schemas, and config:
 
-**Don't document:**
-```typescript
-// Increment the counter  ← useless
-counter++;
-```
+- prefer additive changes
+- version breaking changes
+- document deprecations
+- define migration and rollback steps before rollout
 
-## Principles We Debated
+## Practical Heuristics
 
-### Speed vs. Quality
+### Start With A Written Problem Statement
 
-**Lan's principle:** "Nachhaltigkeit > Schnelligkeit" (Sustainability over speed)
+A spec is useful, but it should describe outcomes, constraints, assumptions, and risk. A list of files to edit is not enough.
 
-**Ice's interpretation:** Do it right the first time. Traefik setup took 45 min instead of 5 min Nginx hack, but now adding new services takes 30 seconds.
+### Read Existing Code Before Extending It
 
-**Lava's interpretation:** Ship fast, iterate. Get the MVP out, then polish. 13 tasks in one day proves speed and quality aren't mutually exclusive.
+Consistency reduces bugs, but inherited patterns should still be challenged when they are weak.
 
-**Resolution:** Both are right. Speed for features (Lava), sustainability for infrastructure (Ice).
+### Separate Decision Layers
 
-### Single Reviewer vs. Peer Review
+- UI concerns stay out of domain logic.
+- Domain rules stay out of controllers and handlers.
+- Infrastructure concerns stay behind interfaces where useful.
 
-**Ice:** Single Lead reviewer maintains consistency. One person owns quality.
+### Prefer Boring Technology On Critical Paths
 
-**Counter-argument:** Single point of failure. If the Lead is wrong, nobody catches it.
+Innovation is fine. Novelty on the critical path needs explicit justification.
 
-**Our solution:** Lead reviews all PRs, but the Human spot-checks the result (Lan tested on mobile → found responsive issues).
+### Design For Automation
 
-## Ice's Opinion
+If review, testing, release, or rollback cannot be automated, the design is creating operational cost.
 
-> The most underrated principle: **Read existing code before writing new code.** Half of Lava's bugs (localStorage key, branch base) would have been caught by looking at how existing code does it. The codebase IS the documentation.
+## Common Design Smells
+
+- authentication and authorization mixed ad hoc into handlers
+- hidden coupling through shared tables, environment variables, or mutable globals
+- APIs that return inconsistent shapes and error contracts
+- business rules duplicated across UI, API, and jobs
+- no idempotency for externally triggered writes
+- no strategy for rate limiting, abuse prevention, or backpressure
+
+## Review Questions
+
+- What breaks if this dependency is slow or unavailable?
+- What is the blast radius if this change is wrong?
+- Can this be tested without full-system setup?
+- Can operators detect and recover from failure quickly?
+- Is sensitive data exposed anywhere it should not be?
+
+## Exit Criteria
+
+Design quality is acceptable when:
+
+- the design can be explained with clear boundaries
+- major risks are documented, not implied
+- the safe behavior is the default behavior
+- failure handling is intentional
+- the system remains operable after the change ships
