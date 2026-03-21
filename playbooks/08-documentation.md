@@ -84,15 +84,34 @@ For systems with meaningful data complexity, document:
 - schema migration expectations
 - reporting or analytics boundaries
 
-## AI-Specific Context
+## AI-Specific Context: The `.ai/` Pattern
 
-AI-oriented docs such as `.ai/` can be useful for task context, conventions, and agent boundaries. They should complement, not replace, standard engineering documentation.
+Teams using AI agents benefit from a dedicated `.ai/` directory at the project root. This gives agents structured context without polluting standard docs.
 
-If you rely on agents, document:
+### Recommended Files
 
-- what they are allowed to change
-- where they get authoritative context
-- how human review is expected to happen
+| File | Purpose |
+|------|---------|
+| `.ai/AGENTS.md` | Who works on this project (roles, workflow, code standards) |
+| `.ai/ARCHITECTURE.md` | System overview, tech stack, key patterns, deployment |
+| `.ai/TASKS.md` | Current work packages with priorities and status |
+| `.ai/DECISIONS.md` | Architecture decisions (why things are built this way) |
+
+### Why It Works
+
+- Agents read `.ai/` at session start and immediately understand the project
+- No onboarding delay, no guessing about conventions
+- Separates agent context from human docs (README stays clean)
+- Machine-readable structure (predictable file names and sections)
+
+### Rules
+
+- `.ai/` complements standard docs, it does not replace them
+- Keep files concise (agents share context window with everything else)
+- Update when architecture, roles, or active tasks change
+- Define what agents are allowed to change and where human review is required
+
+See [ScaffoldKit](https://github.com/LanNguyenSi/scaffoldkit) for blueprints that generate `.ai/` automatically.
 
 ## Documentation Freshness
 
