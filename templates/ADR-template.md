@@ -1,64 +1,42 @@
 # ADR Template
 
-Architecture Decision Records document WHY, not WHAT.
-
 ```markdown
 # ADR-XXX: [Decision Title]
 
 **Date:** YYYY-MM-DD
 **Status:** Proposed / Accepted / Superseded / Deprecated
-**Deciders:** [Who made this decision]
+**Owners:** [Names or roles]
 
 ## Context
 
-What is the problem or situation that requires a decision?
+What problem are we solving? Include constraints, risk, and why the decision matters now.
 
 ## Options Considered
 
-### Option A: [Name]
-- Pro: ...
-- Con: ...
+### Option A
+- Benefits
+- Risks
+- Operational impact
 
-### Option B: [Name]
-- Pro: ...
-- Con: ...
+### Option B
+- Benefits
+- Risks
+- Operational impact
 
 ## Decision
 
-Which option was chosen and why.
+What was chosen and why.
 
 ## Consequences
 
 ### Positive
-- What improves
+- Expected benefits
 
 ### Negative
-- What trade-offs we accept
+- Tradeoffs and follow-on costs
 
-### Migration
-- What needs to change in existing code (if any)
-```
-
-## Example
-
-```markdown
-# ADR-004: Traefik over Nginx for Reverse Proxy
-
-**Date:** 2026-03-18
-**Status:** Accepted
-**Deciders:** Lan, Ice
-
-## Context
-Need a reverse proxy for multiple services (Triologue, Event Booking, Health Dashboard) with automatic SSL.
-
-## Options
-- **Nginx:** Quick setup, manual SSL config, manual per-service config
-- **Traefik:** Docker-native, automatic SSL, label-based routing
-
-## Decision
-Traefik. "Nachhaltigkeit > Schnelligkeit" (Lan). Initial setup takes longer but adding new services is trivial.
-
-## Consequences
-- Positive: New services in 30 seconds, automatic SSL
-- Negative: Traefik-specific knowledge required, more complex initial setup
+### Follow-Up
+- Migration work
+- New controls or docs required
+- Review date if the decision should be revisited
 ```

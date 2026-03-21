@@ -1,32 +1,37 @@
 # Pull Request Template
 
 ```markdown
-## Task: [Task ID] — [Title]
+## Summary
 
-### What
-Brief description of what this PR implements.
+What changed and why.
 
-### Changes
-- `path/to/file.ts` — What changed and why
-- `path/to/new-file.ts` — NEW: Purpose
+## Risk Level
 
-### Testing
-How to test:
-```bash
-# API test
-curl -X POST http://localhost:3000/api/endpoint -d '{"key":"value"}'
+Low / Medium / High
 
-# Browser test
-# Navigate to /page and verify X
-```
+## Validation
 
-### Checklist
-- [ ] Build passes (`npm run build`)
-- [ ] TypeScript clean (no `any`)
-- [ ] Follows existing patterns
-- [ ] Responsive (mobile + desktop)
-- [ ] German UI strings (if applicable)
+- Automated checks run:
+- Manual checks run:
+- Screenshots or evidence:
 
-### Screenshots (if UI change)
-Before | After
+## Operational Notes
+
+- Migration required:
+- Feature flag required:
+- Rollback plan:
+- Runbook/docs updated:
+
+## AI Assistance
+
+- Agent used:
+- Human reviewer accountable:
+
+## Checklist
+
+- [ ] Scope is clear
+- [ ] Tests are appropriate to risk
+- [ ] Security and data implications reviewed
+- [ ] CI passed
+- [ ] Docs updated where needed
 ```

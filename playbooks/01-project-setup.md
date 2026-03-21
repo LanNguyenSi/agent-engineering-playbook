@@ -1,656 +1,177 @@
 # 01 - Project Setup
 
-**From idea to structured project in 10 steps**
-
-## Overview
-
-A solid project setup is the foundation of successful software development. This playbook guides you through structuring a new project following enterprise best practices.
-
-## Prerequisites
-
-- Node.js 18+ installed
-- Git configured
-- Package manager (npm, yarn, or pnpm)
-- Code editor (VS Code recommended)
+Project setup determines how much chaos you buy later. Enterprise-grade delivery starts before the first feature branch.
 
-## 10-Step Project Setup
-
-### Step 1: Define the Project
-
-Before writing any code, clarify:
-
-**✅ Requirements**
-- What problem does this solve?
-- Who are the users?
-- What are the core features?
-- What are the non-functional requirements (performance, security, scalability)?
-
-**✅ Success Criteria**
-- How do you measure success?
-- What metrics matter?
-- What does "done" look like?
-
-**Example:**
-```markdown
-## Project: Event Booking System
-
-### Problem
-Users need to book events, manage attendees, and handle payments
-
-### Core Features
-1. Event creation and management
-2. Ticket booking with payment
-3. Email confirmations
-4. Admin dashboard
-
-### Success Criteria
-- Handle 1000+ concurrent bookings
-- 99.9% uptime
-- < 2s page load time
-- PCI DSS compliant payments
-```
-
-### Step 2: Choose Technology Stack
-
-Select technologies based on:
-- **Team expertise**
-- **Project requirements**
-- **Ecosystem maturity**
-- **Long-term maintainability**
-
-**Modern Full-Stack (Recommended)**
-```typescript
-// Frontend
-- React 18+ or Next.js 14+
-- TypeScript (mandatory for type safety)
-- Tailwind CSS (utility-first styling)
-- Radix UI / shadcn/ui (accessible components)
-
-// Backend
-- Next.js API Routes or Express.js
-- Prisma ORM (database abstraction)
-- PostgreSQL (relational data)
-- Redis (caching, sessions)
-
-// Infrastructure
-- Docker (containerization)
-- Vercel or Railway (deployment)
-- GitHub Actions (CI/CD)
-```
-
-**Document your choices** in `.ai/DECISIONS.md` (Architecture Decision Records)
-
-### Step 3: Initialize Project Structure
-
-Use scaffolding tools or create manually:
-
-**Option A: ScaffoldKit** (Recommended)
-```bash
-scaffoldkit new my-project --blueprint nextjs-fullstack
-```
-
-**Option B: Manual Setup**
-```bash
-# Create project
-npx create-next-app@latest my-project --typescript --tailwind --app
-
-# Initialize git
-cd my-project
-git init
-git add .
-git commit -m "Initial commit"
-
-# Create standard directories
-mkdir -p src/{components,lib,app,types}
-mkdir -p prisma
-mkdir -p tests/{unit,integration,e2e}
-mkdir -p .ai
-```
-
-### Step 4: Set Up Development Environment
-
-**Essential Configuration Files:**
-
-**1. TypeScript (`tsconfig.json`)**
-```json
-{
-  "compilerOptions": {
-    "target": "ES2022",
-    "lib": ["ES2022", "DOM"],
-    "jsx": "preserve",
-    "module": "ESNext",
-    "moduleResolution": "bundler",
-    "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noImplicitReturns": true
-  }
-}
-```
-
-**2. ESLint (`.eslintrc.json`)**
-```json
-{
-  "extends": [
-    "next/core-web-vitals",
-    "plugin:@typescript-eslint/recommended"
-  ],
-  "rules": {
-    "@typescript-eslint/no-unused-vars": "error",
-    "@typescript-eslint/no-explicit-any": "error"
-  }
-}
-```
-
-**3. Prettier (`.prettierrc`)**
-```json
-{
-  "semi": true,
-  "singleQuote": true,
-  "tabWidth": 2,
-  "trailingComma": "es5",
-  "printWidth": 100
-}
-```
-
-**4. Git Hooks (`package.json`)**
-```json
-{
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "*.{js,ts,tsx}": ["eslint --fix", "prettier --write"]
-  }
-}
-```
-
-### Step 5: Create `.ai/` Context Files
-
-AI-native projects use `.ai/` for agent collaboration:
-
-**`.ai/AGENTS.md`** - Team roles and workflows
-```markdown
-# Team
-
-## Agents
-- Ice (@ice) — Backend, architecture
-- Lava (@lava) — Frontend, testing
-
-## Workflow
-1. Pick task from TASKS.md
-2. Create feature branch
-3. Implement + test
-4. Open PR for review
-5. Deploy after approval
-```
-
-**`.ai/ARCHITECTURE.md`** - System overview
-```markdown
-# Architecture
-
-## Stack
-- Next.js 14 (App Router)
-- PostgreSQL + Prisma
-- Tailwind CSS + shadcn/ui
-
-## Structure
-\`\`\`
-src/
-├── app/         # Next.js pages
-├── components/  # React components
-├── lib/         # Business logic
-└── types/       # TypeScript types
-\`\`\`
-```
-
-**`.ai/TASKS.md`** - Current work
-```markdown
-# Tasks
-
-## In Progress
-- [ ] User authentication (Ice)
-- [ ] Event listing page (Lava)
-
-## Backlog
-- [ ] Payment integration
-- [ ] Email notifications
-```
-
-**`.ai/DECISIONS.md`** - ADRs
-```markdown
-# Architecture Decisions
-
-## ADR-001: Use Next.js App Router
-**Date:** 2026-03-20
-**Status:** Accepted
-**Decision:** Use Next.js 14 App Router over Pages Router
-**Rationale:** Better performance, React Server Components, improved DX
-```
-
-### Step 6: Set Up Database
-
-**1. Choose Database**
-- **PostgreSQL**: Relational data, ACID transactions
-- **MongoDB**: Flexible schemas, document storage
-- **Redis**: Caching, sessions, real-time
-
-**2. Initialize Prisma** (for PostgreSQL)
-```bash
-npm install prisma @prisma/client
-npx prisma init
-```
-
-**3. Define Schema** (`prisma/schema.prisma`)
-```prisma
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
-generator client {
-  provider = "prisma-client-js"
-}
-
-model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-```
-
-**4. Run Migration**
-```bash
-npx prisma migrate dev --name init
-npx prisma generate
-```
-
-### Step 6.5: Docker Development Environment (Optional)
-
-**Why Docker for Development?**
-- ✅ Consistent environment across team
-- ✅ No local PostgreSQL/Redis installation needed
-- ✅ One command to start all services
-- ✅ Easy to reset/clean state
-
-**1. Create `docker-compose.yml`**
-```yaml
-version: '3.8'
-
-services:
-  # PostgreSQL Database
-  db:
-    image: postgres:16-alpine
-    restart: unless-stopped
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_USER: myapp
-      POSTGRES_PASSWORD: devpassword
-      POSTGRES_DB: myapp_dev
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U myapp"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  # Redis Cache
-  redis:
-    image: redis:7-alpine
-    restart: unless-stopped
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 3s
-      retries: 5
-
-  # Application (optional - for full containerization)
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile.dev
-    ports:
-      - "3000:3000"
-    environment:
-      DATABASE_URL: "postgresql://myapp:devpassword@db:5432/myapp_dev"
-      REDIS_URL: "redis://redis:6379"
-      NODE_ENV: development
-    volumes:
-      # Hot reload - mount source code
-      - ./src:/app/src
-      - ./prisma:/app/prisma
-      - ./public:/app/public
-      # Don't mount node_modules (use container's version)
-      - /app/node_modules
-    depends_on:
-      db:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    command: npm run dev
-
-volumes:
-  postgres_data:
-  redis_data:
-```
-
-**2. Create `Dockerfile.dev`** (for app service)
-```dockerfile
-FROM node:18-alpine
-
-WORKDIR /app
-
-# Install dependencies
-COPY package*.json ./
-RUN npm ci
-
-# Copy source code
-COPY . .
-
-# Expose port
-EXPOSE 3000
-
-# Default command (can be overridden in docker-compose)
-CMD ["npm", "run", "dev"]
-```
-
-**3. Update `.env.local`**
-```bash
-# When using Docker services
-DATABASE_URL="postgresql://myapp:devpassword@localhost:5432/myapp_dev"
-REDIS_URL="redis://localhost:6379"
-
-# When running app IN Docker (use service names)
-# DATABASE_URL="postgresql://myapp:devpassword@db:5432/myapp_dev"
-# REDIS_URL="redis://redis:6379"
-```
-
-**4. Add to `.gitignore`**
-```
-# Docker
-docker-compose.override.yml
-```
-
-**5. Usage Commands**
-
-**Start services** (DB + Redis only, app runs locally):
-```bash
-# Start PostgreSQL + Redis
-docker compose up -d db redis
-
-# Check status
-docker compose ps
-
-# View logs
-docker compose logs -f db redis
-
-# Stop services
-docker compose down
-
-# Reset data (WARNING: deletes all data)
-docker compose down -v
-```
-
-**Full containerization** (DB + Redis + App):
-```bash
-# Start everything
-docker compose up -d
-
-# Rebuild app after dependency changes
-docker compose up -d --build app
-
-# Run migrations inside container
-docker compose exec app npx prisma migrate dev
-
-# Access app shell
-docker compose exec app sh
-```
-
-**6. Common Development Workflow**
-
-```bash
-# Day 1: Start fresh
-docker compose up -d db redis
-npm run dev  # App runs locally, connects to Docker DB
-
-# Day 2: Continue work
-docker compose start  # Resume existing containers
-npm run dev
-
-# Reset database
-docker compose down -v  # Delete volumes
-docker compose up -d db redis
-npx prisma migrate dev  # Recreate schema
-```
-
-**7. Team Onboarding Benefits**
-
-New developer setup:
-```bash
-# Clone repo
-git clone <repo-url>
-cd my-project
-
-# Start services
-docker compose up -d db redis
-
-# Install dependencies + run migrations
-npm install
-npx prisma migrate dev
-
-# Start development
-npm run dev
-```
-
-No PostgreSQL installation, no Redis setup, no "works on my machine" issues!
-
-### Step 7: Environment Configuration
-
-**`.env.local`** (never commit!)
-```bash
-# Database
-DATABASE_URL="postgresql://user:password@localhost:5432/mydb"
-
-# Auth
-NEXTAUTH_SECRET="your-secret-key"
-NEXTAUTH_URL="http://localhost:3000"
-
-# External Services
-STRIPE_SECRET_KEY="sk_test_..."
-SENDGRID_API_KEY="SG...."
-```
-
-**`.env.example`** (commit this!)
-```bash
-# Database
-DATABASE_URL="postgresql://user:password@localhost:5432/mydb"
-
-# Auth
-NEXTAUTH_SECRET="your-secret-key"
-NEXTAUTH_URL="http://localhost:3000"
-
-# External Services (get your own keys)
-STRIPE_SECRET_KEY=""
-SENDGRID_API_KEY=""
-```
-
-### Step 8: Set Up Testing
-
-**Install Dependencies**
-```bash
-npm install -D vitest @testing-library/react @testing-library/jest-dom
-npm install -D playwright @playwright/test
-```
-
-**Vitest Config** (`vitest.config.ts`)
-```typescript
-import { defineConfig } from 'vitest/config';
-import react from '@vitejs/plugin-react';
-
-export default defineConfig({
-  plugins: [react()],
-  test: {
-    environment: 'jsdom',
-    setupFiles: ['./tests/setup.ts'],
-  },
-});
-```
-
-**Example Unit Test** (`tests/unit/utils.test.ts`)
-```typescript
-import { describe, it, expect } from 'vitest';
-import { formatDate } from '@/lib/utils';
-
-describe('formatDate', () => {
-  it('formats dates correctly', () => {
-    const date = new Date('2026-03-20');
-    expect(formatDate(date)).toBe('March 20, 2026');
-  });
-});
-```
-
-### Step 9: Documentation
-
-**Essential Docs:**
-
-**`README.md`**
-```markdown
-# My Project
-
-Brief description
-
-## Setup
-1. \`npm install\`
-2. Copy \`.env.example\` to \`.env.local\`
-3. \`npx prisma migrate dev\`
-4. \`npm run dev\`
-
-## Testing
-- \`npm test\` — Unit tests
-- \`npm run test:e2e\` — E2E tests
-
-## Deployment
-See [DEPLOYMENT.md](docs/DEPLOYMENT.md)
-```
-
-**`CONTRIBUTING.md`**
-```markdown
-# Contributing
-
-1. Create feature branch: \`git checkout -b feature/my-feature\`
-2. Make changes + write tests
-3. Run \`npm test\` and \`npm run lint\`
-4. Open PR with description
-5. Wait for review
-```
-
-### Step 10: CI/CD Pipeline
-
-**GitHub Actions** (`.github/workflows/ci.yml`)
-```yaml
-name: CI
-
-on: [push, pull_request]
-
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-      - run: npm ci
-      - run: npm run lint
-      - run: npm test
-      - run: npm run build
-```
-
-## Project Structure Example
-
-Final structure after setup:
-
-```
-my-project/
-├── .ai/
-│   ├── AGENTS.md
-│   ├── ARCHITECTURE.md
-│   ├── TASKS.md
-│   └── DECISIONS.md
-├── src/
-│   ├── app/              # Next.js pages (App Router)
-│   ├── components/       # React components
-│   ├── lib/              # Business logic + utilities
-│   └── types/            # TypeScript types
-├── prisma/
-│   └── schema.prisma     # Database schema
-├── tests/
-│   ├── unit/             # Unit tests
-│   ├── integration/      # API/DB tests
-│   └── e2e/              # End-to-end tests
-├── .github/
-│   └── workflows/        # CI/CD
-├── .env.example          # Environment template
-├── .gitignore
-├── package.json
-├── tsconfig.json
-├── README.md
-└── CONTRIBUTING.md
-```
-
-## Checklist
-
-Use this when starting a new project:
-
-- [ ] Requirements defined and documented
-- [ ] Technology stack chosen and recorded in ADRs
-- [ ] Project initialized with proper structure
-- [ ] TypeScript + ESLint + Prettier configured
-- [ ] `.ai/` context files created
-- [ ] Database set up with migrations
-- [ ] Docker Compose for development (optional but recommended)
-- [ ] Environment variables configured
-- [ ] Testing framework installed
-- [ ] Documentation written (README, CONTRIBUTING)
-- [ ] CI/CD pipeline configured
-- [ ] First commit pushed to main branch
-
-## Next Steps
-
-After project setup:
-1. Read **[02-Architecture](02-architecture.md)** to design your system
-2. Follow **[06-Testing Strategy](06-testing-strategy.md)** to implement TDD
-3. Use **[05-Development Workflow](05-development-workflow.md)** for team collaboration
-
-## Common Pitfalls
-
-❌ **Starting without clear requirements** → Leads to scope creep and rework
-❌ **Skipping TypeScript strict mode** → Type bugs in production
-❌ **No testing from day one** → Hard to add later, bugs accumulate
-❌ **Poor git hygiene** → Large commits, no history, hard to review
-❌ **Missing documentation** → New team members struggle to onboard
-
-✅ **Do this instead:** Follow all 10 steps systematically
-
-## Real-World Example
-
-This setup was used for:
-- **Event Booking System** (Next.js + Prisma + PostgreSQL)
-- **Agent Control Platform** (Full-stack monitoring)
-- **Memory-Weaver v2** (4-layer architecture)
-
-Every production project starts with solid foundations.
-
----
-
-**Next:** [02 - Architecture →](02-architecture.md)
+## Objectives
+
+The setup phase should produce:
+
+- a shared understanding of the problem
+- explicit constraints and success measures
+- a baseline architecture and delivery model
+- initial controls for security, testing, documentation, and release
+
+## Step 1: Define The Product Frame
+
+Write a short project charter that covers:
+
+- problem statement
+- target users and stakeholders
+- business goals
+- out-of-scope items
+- success criteria
+
+Success criteria should include functional outcomes and operational expectations.
+
+Examples:
+
+- checkout completion rate
+- response time targets
+- uptime target
+- recovery expectations
+- compliance obligations
+
+## Step 2: Identify Constraints Early
+
+Document constraints before selecting tools:
+
+- regulatory and privacy requirements
+- budget and staffing limits
+- integration dependencies
+- required delivery dates
+- data residency or tenant isolation needs
+
+Teams that skip this often pick a stack first and spend months working around it.
+
+## Step 3: Define Non-Functional Requirements
+
+Capture the baseline expectations for:
+
+- availability
+- performance
+- security
+- scalability
+- observability
+- maintainability
+
+These do not need to be perfect on day one, but they must be explicit.
+
+## Step 4: Choose A Delivery Model
+
+Decide how changes will move through the system:
+
+- branch strategy
+- review requirements
+- CI baseline
+- release strategy
+- environment model
+- incident and rollback ownership
+
+This is part of product setup, not something to improvise later.
+
+## Step 5: Select The Initial Architecture
+
+Pick the smallest architecture that meets current requirements.
+
+Common default:
+
+- modular monolith
+- relational database if transactions matter
+- background job runner for async work
+- object storage for files
+- one deployment unit unless scale or risk justifies more
+
+Choose technologies based on:
+
+- team capability
+- ecosystem maturity
+- hiring and maintenance cost
+- operational fit
+
+Avoid hard-coding the playbook to one frontend, backend, proxy, or hosting preference.
+
+## Step 6: Establish Repository Standards
+
+At minimum, initialize:
+
+- `README.md`
+- `CONTRIBUTING.md`
+- `SECURITY.md`
+- `.gitignore`
+- lockfile
+- scripts for build, test, lint, and local startup
+- code formatting and lint rules
+- branch protection in the remote repository
+
+If you use AI collaboration docs such as `.ai/`, treat them as additive context, not as a replacement for standard engineering artifacts.
+
+## Step 7: Create Initial Architecture Records
+
+Before implementation, create:
+
+- system context summary
+- service and dependency inventory
+- first ADRs for major technology and topology choices
+- data classification notes for sensitive domains
+
+## Step 8: Prepare The Security Baseline
+
+Set the default controls now:
+
+- secret handling approach
+- access model for environments and repos
+- dependency update policy
+- vulnerability triage owner
+- audit and logging expectations
+
+At minimum, ensure secrets are not stored in source control and access is least privilege by default.
+
+## Step 9: Prepare The Testing Baseline
+
+Define which checks are required before merge:
+
+- type checks
+- lint
+- unit tests
+- integration tests where needed
+- build verification
+
+For higher-risk systems, include:
+
+- contract tests
+- security scanning
+- accessibility checks
+- performance smoke tests
+
+## Step 10: Define Release Readiness From Day One
+
+Before shipping the first feature, know:
+
+- how deployments happen
+- how to roll back
+- how to verify health
+- who is paged if it breaks
+- where runbooks and dashboards live
+
+If you cannot answer these questions early, the project is accumulating operational debt immediately.
+
+## Setup Deliverables
+
+By the end of setup, you should have:
+
+- project charter
+- initial ADR set
+- repository standards in place
+- CI baseline
+- environment plan
+- security and documentation owners
+- first backlog with acceptance criteria
+
+## Exit Criteria
+
+Setup is complete when:
+
+- goals and constraints are explicit
+- the delivery model is defined
+- the repository enforces baseline quality controls
+- the team knows how code reaches production safely

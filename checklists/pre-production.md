@@ -1,50 +1,43 @@
 # Checklist: Pre-Production
 
-## Infrastructure
+## Release And Ownership
 
-- [ ] Docker build succeeds with `--no-cache`
-- [ ] Traefik configured with service labels
-- [ ] DNS A record pointing to server IP
-- [ ] SSL certificate auto-generated (Let's Encrypt)
-- [ ] HTTP → HTTPS redirect working
-- [ ] Health endpoint returns 200
+- [ ] Service owner identified
+- [ ] On-call or support path defined
+- [ ] Release owner identified
+- [ ] Rollback plan documented
 
-## Database
+## Build And Deploy
 
-- [ ] Production database running (PostgreSQL/MySQL)
-- [ ] Migrations applied
-- [ ] Prisma Client generated with latest schema
-- [ ] Seed data created (admin user, test data)
-- [ ] Backup strategy defined
+- [ ] Deployment is automated and repeatable
+- [ ] Immutable artifact or equivalent release package is produced
+- [ ] Staging or equivalent validation environment exists
+- [ ] Smoke checks are defined
+
+## Data And Recovery
+
+- [ ] Migrations reviewed and tested
+- [ ] Backup strategy documented
+- [ ] Restore procedure documented
+- [ ] Restore testing cadence defined
 
 ## Security
 
-- [ ] Default passwords changed (admin, database)
-- [ ] Environment variables set (not .env.example defaults)
-- [ ] No secrets in git history
-- [ ] `.env` in `.gitignore`
-- [ ] Auth working (login, protected routes)
-- [ ] CORS configured if needed
+- [ ] Secrets are managed outside source control
+- [ ] Access is least privilege and reviewable
+- [ ] Dependency and vulnerability review completed
+- [ ] TLS and network exposure reviewed
 
-## Application
+## Observability
 
-- [ ] All P0 features working
-- [ ] Error states handled (404, 500, empty states)
-- [ ] Responsive design tested on mobile
-- [ ] Core user flow tested end-to-end
-- [ ] Email sending configured (if applicable)
-- [ ] Logging configured (errors visible in `docker logs`)
+- [ ] Health and readiness checks exist
+- [ ] Structured logs exist
+- [ ] Critical metrics and alerts exist
+- [ ] Dashboards cover key user journeys
 
-## Monitoring
+## Product Verification
 
-- [ ] Health dashboard deployed (recommended)
-- [ ] Container restart policy set (`unless-stopped`)
-- [ ] Log rotation configured
-- [ ] Alerting for service downtime (optional)
-
-## Documentation
-
-- [ ] README has Quick Start
-- [ ] Admin credentials documented (securely)
-- [ ] Deployment commands documented
-- [ ] Rollback procedure documented
+- [ ] Critical user paths pass in pre-production
+- [ ] Error handling is verified
+- [ ] Performance is acceptable for expected load
+- [ ] Accessibility and compliance expectations are met where required

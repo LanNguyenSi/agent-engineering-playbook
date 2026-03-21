@@ -1,172 +1,134 @@
-# 09 — Production Readiness
+# 09 - Production Readiness
 
-> From "works on my machine" to "works in production at 3am."
+Production readiness means the system can be deployed, observed, operated, and recovered under realistic conditions.
 
-## Deployment Architecture
+## Production Baseline
 
-### Recommended Stack
+Before a service is considered production-ready, define:
 
-```
-Internet
-  └── Traefik (ports 80/443, automatic SSL)
-        ├── app.example.com → App Container (port 3000)
-        ├── status.example.com → Health Dashboard
-        └── api.example.com → API Container (if separate)
-```
+- service owner
+- runtime topology
+- dependencies
+- SLOs or clear service expectations
+- incident path
+- rollback strategy
+- backup and restore expectations
 
-**Why Traefik:**
-- Automatic SSL via Let's Encrypt
-- Docker-native (reads labels, no config files)
-- Add new services in 30 seconds (just add labels)
-- HTTP/2 out of the box
+If these are unclear, the product is not ready regardless of code quality.
 
-### Docker Multi-Stage Build
+## Environment Strategy
 
-```dockerfile
-# Stage 1: Dependencies
-FROM node:20-slim AS deps
-COPY package*.json ./
-COPY prisma ./prisma/
-RUN npm ci
-RUN npx prisma generate
+Recommended minimum:
 
-# Stage 2: Build
-FROM node:20-slim AS builder
-COPY --from=deps /app/node_modules ./node_modules
-COPY . .
-RUN npx prisma generate  # CRITICAL: COPY . . overwrites generated client
-RUN npm run build
+- local development
+- CI test environment
+- staging or pre-production environment for release validation
+- production
 
-# Stage 3: Production
-FROM node:20-slim AS runner
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
-COPY --from=builder /app/public ./public
-CMD ["node", "server.js"]
-```
+The higher the risk, the closer staging should resemble production.
 
-**Critical lesson:** `prisma generate` must run in BOTH Stage 1 AND Stage 2. The `COPY . .` in Stage 2 overwrites the generated Prisma Client from Stage 1. We lost 30 minutes debugging this.
+## Deployment Principles
 
-### Traefik Labels
+- automate deployment steps
+- prefer immutable artifacts
+- make deployments repeatable
+- keep configuration externalized
+- choose a rollout strategy proportional to risk
 
-```yaml
-services:
-  app:
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.app.rule=Host(`app.example.com`)"
-      - "traefik.http.routers.app.entrypoints=websecure"
-      - "traefik.http.routers.app.tls.certresolver=letsencrypt"
-      - "traefik.http.services.app.loadbalancer.server.port=3000"
-      - "traefik.docker.network=traefik"
-```
+Possible rollout patterns:
 
-## Database Migrations
+- rolling deployment
+- blue/green deployment
+- canary rollout
+- feature-flagged release
 
-### Schema Change Workflow
+No single proxy, cloud, or container stack is universally correct. Standardize per organization, not per personal preference.
 
-```bash
-# 1. Edit schema
-vim prisma/schema.prisma
+## Database Change Discipline
 
-# 2. Build with --no-cache (forces Prisma Client regeneration)
-docker compose build --no-cache app
+Schema changes deserve the same rigor as code:
 
-# 3. Deploy
-docker compose up -d app
+- review migrations
+- test them on realistic data
+- ensure backward compatibility when rolling deployments are possible
+- define rollback or forward-fix strategy before release
+- verify backup freshness before high-risk changes
 
-# 4. Run migration
-docker exec db psql -U user -d db -c "ALTER TYPE \"Status\" ADD VALUE IF NOT EXISTS 'NEW_VALUE'"
+Never normalize unsafe shortcuts such as bypassing migration tooling without a documented reason and compensating controls.
 
-# 5. Verify
-docker logs app --tail 10
-```
+## Secrets And Access
 
-**Why not `prisma migrate`?** In Docker, `npx prisma` often fails due to permissions. Direct SQL via `psql` is more reliable for enum additions and column changes.
+Production secrets should:
 
-## Health Monitoring
+- come from a managed secret store or equivalent controlled mechanism
+- be rotated on a defined schedule or after exposure
+- never be shared through chat or committed to source control
+- be scoped by environment and privilege
 
-### Minimum Viable Monitoring
+Production access should be limited, logged, and reviewable.
 
-Every production service needs:
+## Observability
 
-1. **Health endpoint:** `GET /health` → `{ status: "ok" }`
-2. **Container health check:** Docker `HEALTHCHECK` directive
-3. **External monitoring:** Status dashboard or uptime checker
+Minimum production signals:
 
-### Health Dashboard
+- health and readiness checks
+- structured application logs
+- request, job, or workflow metrics
+- alerting tied to user-impacting failures
+- dashboards for the critical path
 
-We built one: [status.opentriologue.ai](https://status.opentriologue.ai)
+Add tracing when requests cross service boundaries or debugging latency is otherwise difficult.
 
-Monitors:
-- Service availability (TCP port check)
-- Container status (Docker API)
-- System metrics (CPU, memory)
-- Application metrics (active users, messages)
+## Reliability And Recovery
 
-## Common Production Issues
+You need more than backups. You need recovery confidence.
 
-### 1. Next.js + Server Components + Database
+Define:
 
-**Problem:** Server Components try to access DB at build time.
-**Fix:** `export const dynamic = "force-dynamic"` on every page with DB queries.
+- backup cadence
+- restore test cadence
+- RPO and RTO targets
+- failover expectations
+- operator runbooks for common incidents
 
-### 2. Tailwind CSS v4
+Backups that are never restore-tested are assumptions, not safeguards.
 
-**Problem:** `@tailwind base; @tailwind components; @tailwind utilities;` doesn't work.
-**Fix:** Use `@import "tailwindcss"` (v4 syntax).
+## Security In Production
 
-### 3. Docker Network Isolation
+Production readiness includes:
 
-**Problem:** Container can't reach `localhost` services.
-**Fix:** Use `host.docker.internal` or `network_mode: host` for services that need host access.
+- vulnerability management for runtime dependencies
+- network exposure review
+- TLS and certificate lifecycle management
+- audit logging where required
+- rate limiting and abuse controls where relevant
 
-### 4. SSL Certificate Failures
+## Release Verification
 
-**Problem:** Let's Encrypt can't issue cert (DNS not propagated, rate limit).
-**Fix:** Wait for DNS (`dig domain.com`), disable Traefik dashboard labels if domain doesn't exist.
+After deployment:
 
-### 5. Nginx Behind Traefik
+- run smoke checks
+- verify dashboards and alerts are healthy
+- inspect error and latency signals
+- confirm critical user journeys still work
+- keep the owner available through the initial watch period for risky releases
 
-**Problem:** Nginx has SSL config but Traefik terminates SSL.
-**Fix:** Nginx listens on port 80 only (HTTP), Traefik handles SSL. Create separate `traefik.conf`.
+## Rollback Expectations
 
-## Production Checklist
+A rollback plan must state:
 
-Before going live:
+- what artifact or config will be restored
+- what data changes are reversible and what are not
+- who can execute the rollback
+- how the team will verify recovery
 
-- [ ] Docker build succeeds with `--no-cache`
-- [ ] Health endpoint returns 200
-- [ ] SSL certificate is valid
-- [ ] Database migrations applied
-- [ ] Environment variables set (not defaults)
-- [ ] Error logging configured
-- [ ] Admin password changed from default
-- [ ] Sensitive files in `.gitignore` (.env, credentials)
-- [ ] Responsive design tested on mobile
-- [ ] Core user flow tested end-to-end
+"Redeploy something older" is not a plan unless the exact artifact and procedure are known.
 
-## Rollback Plan
+## Exit Criteria
 
-```bash
-# 1. Check what's running
-docker ps
+Production readiness is credible when:
 
-# 2. Rollback to previous image
-docker compose pull  # pulls latest
-# OR: tag images with version before deploying
-
-# 3. Quick fix: restart containers
-docker compose restart app
-
-# 4. Nuclear option: redeploy from known-good commit
-git checkout <good-commit>
-docker compose build --no-cache app
-docker compose up -d app
-```
-
-## Ice's Opinion
-
-> Production readiness is 80% about deployment infrastructure and 20% about the code. If your deployment is one command (`docker compose up -d`), you can fix bugs in minutes. If deployment is a 15-step manual process, bugs live for days.
-
-> Traefik over Nginx for new projects. Always. The initial setup is 30 minutes longer, but every new service after that is 30 seconds instead of 30 minutes.
+- release steps are automated and rehearsed
+- observability covers the critical path
+- operators know what to do when things break
+- recovery procedures are documented and exercised
