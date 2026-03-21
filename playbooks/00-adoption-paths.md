@@ -2,6 +2,8 @@
 
 This playbook tells an engineer or agent how much of the repository to apply at a given stage. The goal is proportional rigor: enough control for the current phase, without pretending early projects need full enterprise ceremony.
 
+If an agent needs structured input instead of prose, use [models/adoption-model.json](../models/adoption-model.json).
+
 ## The Two Paths
 
 ### Core Path

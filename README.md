@@ -106,10 +106,18 @@ For an existing product:
 - [templates/SECURITY-template.md](templates/SECURITY-template.md)
 - [templates/threat-model-template.md](templates/threat-model-template.md)
 - [templates/runbook-template.md](templates/runbook-template.md)
+- [templates/service-ownership-template.md](templates/service-ownership-template.md)
+- [templates/data-classification-matrix.md](templates/data-classification-matrix.md)
+- [templates/access-review-template.md](templates/access-review-template.md)
+- [templates/exception-register-template.md](templates/exception-register-template.md)
+- [templates/compliance-mapping-template.md](templates/compliance-mapping-template.md)
 
 ### Repo Standards
 - [CONTRIBUTING.md](CONTRIBUTING.md)
 - [SECURITY.md](SECURITY.md)
+
+### Machine-Readable Model
+- [models/adoption-model.json](models/adoption-model.json)
 
 ## Intended Audience
 
@@ -127,6 +135,7 @@ Use the repository in two layers:
 - `Enterprise path`: additional controls that become necessary when customer expectations, regulatory demands, security exposure, or organizational complexity increase.
 
 The decision logic lives in [playbooks/00-adoption-paths.md](playbooks/00-adoption-paths.md).
+Agents that need a structured version can use [models/adoption-model.json](models/adoption-model.json).
 
 ## Scope And Non-Goals
 

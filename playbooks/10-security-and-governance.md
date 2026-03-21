@@ -24,6 +24,24 @@ This chapter defines the baseline for:
 - privacy and data handling controls
 - risk acceptance and exception handling
 
+## Core Artifacts
+
+For enterprise-path work, keep these artifacts current:
+
+- service ownership record
+- data classification matrix
+- access review plan and evidence
+- exception register
+- compliance mapping for required frameworks or customer controls
+
+Templates:
+
+- [templates/service-ownership-template.md](../templates/service-ownership-template.md)
+- [templates/data-classification-matrix.md](../templates/data-classification-matrix.md)
+- [templates/access-review-template.md](../templates/access-review-template.md)
+- [templates/exception-register-template.md](../templates/exception-register-template.md)
+- [templates/compliance-mapping-template.md](../templates/compliance-mapping-template.md)
+
 ## Ownership Model
 
 Every product should identify:
