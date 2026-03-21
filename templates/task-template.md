@@ -28,6 +28,7 @@ Low / Medium / High
 - Known technical constraints
 - Required integrations
 - Decisions or ADRs to follow
+- Threat-model or security review trigger if relevant
 
 ## Implementation Notes
 
@@ -35,4 +36,5 @@ Low / Medium / High
 - Affected areas
 - Testing expectations
 - Rollout or migration notes if relevant
+- Runbook or incident impact if relevant
 ```

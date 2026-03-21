@@ -6,7 +6,7 @@ Pragmatic guidance for building AI-assisted software that can survive enterprise
 
 This repository is a working playbook for teams building production systems with human engineers and AI agents. It does not assume that speed alone is success. It treats delivery, safety, operability, and maintainability as first-class concerns.
 
-The material is organized into nine playbooks:
+The material is organized into eleven playbooks:
 
 1. [Project Setup](playbooks/01-project-setup.md)
 2. [Architecture](playbooks/02-architecture.md)
@@ -17,6 +17,8 @@ The material is organized into nine playbooks:
 7. [Quality Assurance](playbooks/07-quality-assurance.md)
 8. [Documentation](playbooks/08-documentation.md)
 9. [Production Readiness](playbooks/09-production.md)
+10. [Security and Governance](playbooks/10-security-and-governance.md)
+11. [Change Management and Incidents](playbooks/11-change-management-and-incidents.md)
 
 ## What Changed In This Hardening Pass
 
@@ -43,13 +45,15 @@ For a new initiative:
 1. Start with [Project Start Checklist](checklists/project-start.md).
 2. Write a project charter, architecture context, and initial ADRs.
 3. Choose the smallest architecture and delivery model that satisfies current risk.
-4. Set release gates before feature work begins.
+4. Define security ownership, change controls, and incident expectations.
+5. Set release gates before feature work begins.
 
 For an existing product:
 
 1. Run the [Pre-Production Checklist](checklists/pre-production.md).
-2. Compare current process against [Development Workflow](playbooks/05-development-workflow.md) and [Quality Assurance](playbooks/07-quality-assurance.md).
-3. Close missing controls in testing, observability, documentation, and rollout strategy.
+2. Run the [Security Review Checklist](checklists/security-review.md).
+3. Compare current process against [Development Workflow](playbooks/05-development-workflow.md), [Quality Assurance](playbooks/07-quality-assurance.md), and [Security and Governance](playbooks/10-security-and-governance.md).
+4. Close missing controls in testing, observability, documentation, rollout strategy, access governance, and incident readiness.
 
 ## Core Principles
 
@@ -59,6 +63,7 @@ For an existing product:
 - Require evidence for shipping: tests, review, observability, and rollback.
 - Treat documentation, runbooks, and decision records as part of the product.
 - Use AI agents as force multipliers, not as substitutes for ownership and controls.
+- Make access, change approval, and incident response explicit before scale forces them.
 
 ## Repository Structure
 
@@ -72,11 +77,14 @@ For an existing product:
 - [playbooks/07-quality-assurance.md](playbooks/07-quality-assurance.md)
 - [playbooks/08-documentation.md](playbooks/08-documentation.md)
 - [playbooks/09-production.md](playbooks/09-production.md)
+- [playbooks/10-security-and-governance.md](playbooks/10-security-and-governance.md)
+- [playbooks/11-change-management-and-incidents.md](playbooks/11-change-management-and-incidents.md)
 
 ### Checklists
 - [checklists/project-start.md](checklists/project-start.md)
 - [checklists/code-review.md](checklists/code-review.md)
 - [checklists/pre-production.md](checklists/pre-production.md)
+- [checklists/security-review.md](checklists/security-review.md)
 
 ### Templates
 - [templates/task-template.md](templates/task-template.md)
@@ -84,6 +92,8 @@ For an existing product:
 - [templates/ADR-template.md](templates/ADR-template.md)
 - [templates/README-template.md](templates/README-template.md)
 - [templates/SECURITY-template.md](templates/SECURITY-template.md)
+- [templates/threat-model-template.md](templates/threat-model-template.md)
+- [templates/runbook-template.md](templates/runbook-template.md)
 
 ### Repo Standards
 - [CONTRIBUTING.md](CONTRIBUTING.md)
@@ -104,6 +114,7 @@ It is not:
 
 - a certification framework
 - a substitute for legal, privacy, or security specialists
+- a substitute for formal compliance programs where they are required
 - a promise that every team needs heavyweight process from day one
 
 The goal is proportional rigor: enough control for the risk profile you actually have.

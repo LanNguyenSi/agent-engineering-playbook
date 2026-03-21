@@ -6,6 +6,7 @@
 - [ ] On-call or support path defined
 - [ ] Release owner identified
 - [ ] Rollback plan documented
+- [ ] Incident command path defined
 
 ## Build And Deploy
 
@@ -27,6 +28,8 @@
 - [ ] Access is least privilege and reviewable
 - [ ] Dependency and vulnerability review completed
 - [ ] TLS and network exposure reviewed
+- [ ] Threat model exists for high-risk capabilities
+- [ ] Access review cadence is defined
 
 ## Observability
 
@@ -41,3 +44,4 @@
 - [ ] Error handling is verified
 - [ ] Performance is acceptable for expected load
 - [ ] Accessibility and compliance expectations are met where required
+- [ ] Runbooks exist for rollback and top incident scenarios

@@ -12,6 +12,7 @@
 - [ ] No secrets or sensitive data were introduced
 - [ ] Data integrity and migration impact were reviewed
 - [ ] Rollback or mitigation is clear for risky changes
+- [ ] Security review was performed for sensitive changes
 
 ## Engineering Quality
 
@@ -26,6 +27,7 @@
 - [ ] Runbooks or docs were updated if needed
 - [ ] Backward compatibility concerns were addressed
 - [ ] Dependencies and interfaces were reviewed for breakage risk
+- [ ] Change classification matches the actual release risk
 
 ## AI-Assisted Changes
 

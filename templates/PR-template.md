@@ -21,6 +21,7 @@ Low / Medium / High
 - Feature flag required:
 - Rollback plan:
 - Runbook/docs updated:
+- Change class:
 
 ## AI Assistance
 
@@ -32,6 +33,7 @@ Low / Medium / High
 - [ ] Scope is clear
 - [ ] Tests are appropriate to risk
 - [ ] Security and data implications reviewed
+- [ ] Security review completed if required
 - [ ] CI passed
 - [ ] Docs updated where needed
 ```

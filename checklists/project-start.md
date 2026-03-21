@@ -21,8 +21,10 @@
 
 - [ ] Secret handling approach defined
 - [ ] Access model for repo and environments defined
+- [ ] Threat-modeling trigger defined
 - [ ] Data sensitivity and retention expectations documented
 - [ ] Vulnerability triage owner identified
+- [ ] Security and privacy owners identified
 
 ## Repository Standards
 
@@ -38,4 +40,6 @@
 - [ ] Health-check strategy defined
 - [ ] Observability baseline defined
 - [ ] Initial runbook ownership assigned
+- [ ] Change classification and approval expectations defined
+- [ ] Incident severity model defined
 - [ ] Backlog starts with testable acceptance criteria
