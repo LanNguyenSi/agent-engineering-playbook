@@ -131,6 +131,10 @@ A useful post-incident review covers:
 
 The output should change the system, not just archive the pain.
 
+Use [templates/postmortem-template.md](../templates/postmortem-template.md) to structure the review. The template includes sections for blameless root cause analysis, corrective actions with owners, systemic observations, and agent involvement where applicable.
+
+For incidents involving agent-generated code, see also [12 - Agent Governance](12-agent-governance.md) for agent-specific investigation and remediation guidance.
+
 ## Metrics
 
 Track a small set of useful indicators:

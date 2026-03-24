@@ -111,6 +111,8 @@ Teams using AI agents benefit from a dedicated `.ai/` directory at the project r
 - Update when architecture, roles, or active tasks change
 - Define what agents are allowed to change and where human review is required
 
+Use [templates/ai-directory-template.md](../templates/ai-directory-template.md) to bootstrap the `.ai/` directory for a new project.
+
 See [ScaffoldKit](https://github.com/LanNguyenSi/scaffoldkit) for blueprints that generate `.ai/` automatically.
 
 ## Documentation Freshness
