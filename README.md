@@ -6,7 +6,7 @@ Pragmatic guidance for building AI-assisted software that can survive enterprise
 
 This repository is a working playbook for teams building production systems with human engineers and AI agents. It does not assume that speed alone is success. It treats delivery, safety, operability, and maintainability as first-class concerns.
 
-The material is organized into twelve playbooks:
+The material is organized into thirteen playbooks:
 
 0. [Adoption Paths](playbooks/00-adoption-paths.md)
 1. [Project Setup](playbooks/01-project-setup.md)
@@ -20,6 +20,7 @@ The material is organized into twelve playbooks:
 9. [Production Readiness](playbooks/09-production.md)
 10. [Security and Governance](playbooks/10-security-and-governance.md)
 11. [Change Management and Incidents](playbooks/11-change-management-and-incidents.md)
+12. [Agent Governance](playbooks/12-agent-governance.md)
 
 ## What Changed In This Hardening Pass
 
@@ -90,6 +91,7 @@ For an existing product:
 - [playbooks/09-production.md](playbooks/09-production.md)
 - [playbooks/10-security-and-governance.md](playbooks/10-security-and-governance.md)
 - [playbooks/11-change-management-and-incidents.md](playbooks/11-change-management-and-incidents.md)
+- [playbooks/12-agent-governance.md](playbooks/12-agent-governance.md)
 
 ### Checklists
 - [checklists/phase-assessment.md](checklists/phase-assessment.md)
@@ -111,6 +113,8 @@ For an existing product:
 - [templates/access-review-template.md](templates/access-review-template.md)
 - [templates/exception-register-template.md](templates/exception-register-template.md)
 - [templates/compliance-mapping-template.md](templates/compliance-mapping-template.md)
+- [templates/postmortem-template.md](templates/postmortem-template.md)
+- [templates/ai-directory-template.md](templates/ai-directory-template.md)
 
 ### Repo Standards
 - [CONTRIBUTING.md](CONTRIBUTING.md)
