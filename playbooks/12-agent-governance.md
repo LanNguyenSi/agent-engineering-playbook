@@ -11,6 +11,14 @@ Start with lightweight boundaries as soon as agents contribute to code that reac
 - compliance or audit obligations require attribution of changes
 - agent-generated output is reviewed less rigorously than human output
 
+## Governance Lens: Spec, Context, Eval
+
+Agent governance works best when it is operational instead of abstract:
+
+- spec-driven governance: agents should act on explicit task definitions, not vague intent
+- context-driven governance: project context should be versioned and reviewed because it shapes agent behavior
+- eval-driven governance: agent usefulness and safety should be measured through review quality, test evidence, and release outcomes
+
 ## Permission Model
 
 Define what agents are allowed to do. A simple three-tier model:

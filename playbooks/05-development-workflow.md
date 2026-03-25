@@ -11,6 +11,14 @@ A good workflow:
 - makes rollback possible
 - provides traceability from requirement to production change
 
+## Workflow Lens: Spec, Context, Eval
+
+Every change should pass through three lenses:
+
+1. Spec-driven: the objective, scope, risk, acceptance criteria, and dependencies are explicit before implementation starts.
+2. Context-driven: the change is implemented with enough architectural, operational, security, and domain context to avoid shallow or locally optimized decisions.
+3. Eval-driven: the change is judged by evidence through tests, review findings, documentation updates, rollout readiness, and reversibility.
+
 ## Recommended Delivery Model
 
 Default to trunk-based development with short-lived branches unless your regulatory context requires heavier release branching.

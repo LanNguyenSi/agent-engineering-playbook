@@ -76,6 +76,20 @@ For an existing product:
 - Use AI agents as force multipliers, not as substitutes for ownership and controls.
 - Make access, change approval, and incident response explicit before scale forces them.
 
+## Engineering Model
+
+This playbook uses a simple model for production-grade agent engineering:
+
+- spec-driven planning: define the intended outcome, scope, constraints, acceptance criteria, and risk before implementation
+- context-driven execution: give humans and agents the architecture, domain rules, standards, and operating context required to make sound decisions
+- eval-driven delivery: require evidence that a change is ready to ship through tests, review, operational checks, and release gates
+
+In short:
+
+- specs guide the task
+- context guides the decision
+- evals guide delivery confidence
+
 ## Repository Structure
 
 ### Playbooks

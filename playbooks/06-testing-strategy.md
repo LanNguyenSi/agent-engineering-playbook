@@ -13,6 +13,20 @@ The testing strategy should answer:
 
 Coverage alone is not the strategy.
 
+## Testing Is Part Of Evaluation
+
+Testing is one part of evaluation, not the whole of it.
+
+Before shipping agent-assisted changes, evaluation may also include:
+
+- review quality
+- interface compatibility
+- documentation impact
+- rollback readiness
+- operational verification
+
+Tests validate product behavior. Evaluation validates broader delivery confidence.
+
 ## Risk-Based Test Planning
 
 Classify changes roughly as:
